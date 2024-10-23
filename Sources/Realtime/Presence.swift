@@ -108,7 +108,7 @@ public final class Presence {
   ///
   ///     let options = Options(events: [.state: "my_state", .diff: "my_diff"])
   ///     let presence = Presence(channel, opts: options)
-  public struct Options {
+  public struct Options: Sendable {
     let events: [Events: String]
 
     /// Default set of Options used when creating Presence. Uses the
@@ -124,7 +124,7 @@ public final class Presence {
   }
 
   /// Presense Events
-  public enum Events: String {
+  public enum Events: String, Sendable {
     case state
     case diff
   }

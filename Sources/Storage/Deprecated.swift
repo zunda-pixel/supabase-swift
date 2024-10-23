@@ -103,7 +103,7 @@ extension StorageFileApi {
   deprecated,
   message: "File was deprecated and it isn't used in the package anymore, if you're using it on your application, consider replacing it as it will be removed on the next major release."
 )
-public struct File: Hashable, Equatable {
+public struct File: Hashable, Equatable, Sendable {
   public var name: String
   public var data: Data
   public var fileName: String?
