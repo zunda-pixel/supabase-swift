@@ -54,7 +54,7 @@ public struct RealtimeMessageV2: Hashable, Codable, Sendable {
     }
   }
 
-  public enum EventType {
+  public enum EventType: Sendable {
     case system
     case postgresChanges
     case broadcast

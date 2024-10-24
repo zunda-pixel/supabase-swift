@@ -110,7 +110,7 @@ public protocol PhoenixTransportDelegate {
 
 // ----------------------------------------------------------------------
 /// Available `ReadyState`s of a `Transport` layer.
-public enum PhoenixTransportReadyState {
+public enum PhoenixTransportReadyState: Sendable {
   /// The `Transport` is opening a connection to the server.
   case connecting
 

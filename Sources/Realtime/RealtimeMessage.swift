@@ -22,7 +22,7 @@ import Foundation
 import Helpers
 
 /// Data that is received from the Server.
-public struct RealtimeMessage {
+public struct RealtimeMessage: Sendable {
   /// Reference number. Empty if missing
   public let ref: String
 

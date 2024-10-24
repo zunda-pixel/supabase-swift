@@ -21,7 +21,7 @@
 import Foundation
 
 /// A collection of default values and behaviors used across the Client
-public enum Defaults {
+public enum Defaults: Sendable {
   /// Default timeout when sending messages
   public static let timeoutInterval: TimeInterval = 10.0
 
@@ -73,7 +73,7 @@ public enum Defaults {
 
 /// Represents the multiple states that a Channel can be in
 /// throughout it's lifecycle.
-public enum ChannelState: String {
+public enum ChannelState: String, Sendable {
   case closed
   case errored
   case joined
@@ -83,7 +83,7 @@ public enum ChannelState: String {
 
 /// Represents the different events that can be sent through
 /// a channel regarding a Channel's lifecycle.
-public enum ChannelEvent {
+public enum ChannelEvent: Sendable {
   public static let join = "phx_join"
   public static let leave = "phx_leave"
   public static let close = "phx_close"
