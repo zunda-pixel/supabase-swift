@@ -28,8 +28,22 @@ let supabase = SupabaseClient(
   options: .init(
     auth: .init(redirectToURL: Constants.redirectToURL),
     global: .init(
-      logger: ConsoleLogger()
-    )
+      logger: ConsoleLogger(),
+      fetch: { request, bodyData in
+        if let bodyData {
+          try await URLSession.shared.upload(for: request, from: bodyData)
+        } else {
+          try await URLSession.shared.data(for: request)
+        }
+      }
+    ),
+    realtime: .init() { request, bodyData in
+      if let bodyData {
+        try await URLSession.shared.upload(for: request, from: bodyData)
+      } else {
+        try await URLSession.shared.data(for: request)
+      }
+    }
   )
 )
 

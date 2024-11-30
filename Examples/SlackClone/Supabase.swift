@@ -27,6 +27,19 @@ let supabase = SupabaseClient(
   options: SupabaseClientOptions(
     db: .init(encoder: encoder, decoder: decoder),
     auth: .init(redirectToURL: URL(string: "com.supabase.slack-clone://login-callback")),
-    global: SupabaseClientOptions.GlobalOptions(logger: SupaLogger())
+    global: SupabaseClientOptions.GlobalOptions(logger: SupaLogger()) { request, bodyData in
+      if let bodyData {
+        try await URLSession.shared.upload(for: request, from: bodyData)
+      } else {
+        try await URLSession.shared.data(for: request)
+      }
+    },
+    realtime: .init() { request, bodyData in
+      if let bodyData {
+        try await URLSession.shared.upload(for: request, from: bodyData)
+      } else {
+        try await URLSession.shared.data(for: request)
+      }
+    }
   )
 )
