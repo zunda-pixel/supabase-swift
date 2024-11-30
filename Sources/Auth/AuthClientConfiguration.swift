@@ -74,13 +74,7 @@ extension AuthClient {
       logger: (any SupabaseLogger)? = nil,
       encoder: JSONEncoder = AuthClient.Configuration.jsonEncoder,
       decoder: JSONDecoder = AuthClient.Configuration.jsonDecoder,
-      fetch: @escaping FetchHandler = { request, bodyData in
-        if let bodyData {
-          try await URLSession.shared.upload(for: request, from: bodyData)
-        } else {
-          try await URLSession.shared.data(for: request)
-        }
-      },
+      fetch: @escaping FetchHandler,
       autoRefreshToken: Bool = AuthClient.Configuration.defaultAutoRefreshToken
     ) {
       let headers = Configuration.defaultHeaders.merging(headers) { $1 }
@@ -123,13 +117,7 @@ extension AuthClient {
     logger: (any SupabaseLogger)? = nil,
     encoder: JSONEncoder = AuthClient.Configuration.jsonEncoder,
     decoder: JSONDecoder = AuthClient.Configuration.jsonDecoder,
-    fetch: @escaping FetchHandler = { request, bodyData in
-      if let bodyData {
-        try await URLSession.shared.upload(for: request, from: bodyData)
-      } else {
-        try await URLSession.shared.data(for: request)
-      }
-    },
+    fetch: @escaping FetchHandler,
     autoRefreshToken: Bool = AuthClient.Configuration.defaultAutoRefreshToken
   ) {
     self.init(

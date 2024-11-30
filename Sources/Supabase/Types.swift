@@ -1,6 +1,7 @@
 import Auth
 import Foundation
 import HTTPTypes
+import HTTPTypesFoundation
 import Helpers
 import PostgREST
 import Realtime
@@ -92,20 +93,20 @@ public struct SupabaseClientOptions: Sendable {
     /// Optional headers for initializing the client, it will be passed down to all sub-clients.
     public let headers: HTTPFields
 
-    /// A session to use for making requests, defaults to `URLSession.shared`.
-    public let session: URLSession
+    /// A fetch to use for making requests.
+    public let fetch: @Sendable (HTTPRequest, Data?) async throws -> (Data, HTTPResponse)
 
     /// The logger  to use across all Supabase sub-packages.
     public let logger: (any SupabaseLogger)?
 
     public init(
       headers: HTTPFields = [:],
-      session: URLSession = .shared,
-      logger: (any SupabaseLogger)? = nil
+      logger: (any SupabaseLogger)? = nil,
+      fetch:  @escaping @Sendable (HTTPRequest, Data?) async throws -> (Data, HTTPResponse)
     ) {
       self.headers = headers
-      self.session = session
       self.logger = logger
+      self.fetch = fetch
     }
   }
 
@@ -126,9 +127,9 @@ public struct SupabaseClientOptions: Sendable {
   public init(
     db: DatabaseOptions = .init(),
     auth: AuthOptions,
-    global: GlobalOptions = .init(),
+    global: GlobalOptions,
     functions: FunctionsOptions = .init(),
-    realtime: RealtimeClientOptions = .init()
+    realtime: RealtimeClientOptions
   ) {
     self.db = db
     self.auth = auth
@@ -142,12 +143,12 @@ extension SupabaseClientOptions {
   #if !os(Linux)
     public init(
       db: DatabaseOptions = .init(),
-      global: GlobalOptions = .init(),
+      global: GlobalOptions,
       functions: FunctionsOptions = .init(),
-      realtime: RealtimeClientOptions = .init()
+      realtime: RealtimeClientOptions
     ) {
       self.db = db
-      auth = .init()
+      self.auth = .init()
       self.global = global
       self.functions = functions
       self.realtime = realtime

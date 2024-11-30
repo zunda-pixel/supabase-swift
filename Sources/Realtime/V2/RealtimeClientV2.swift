@@ -90,13 +90,7 @@ public final class RealtimeClientV2: Sendable {
         options: options
       ),
       http: HTTPClient(
-        fetch: options.fetch ?? { request, bodyData in
-          if let bodyData {
-            return try await URLSession.shared.upload(for: request, from: bodyData)
-          } else {
-            return try await URLSession.shared.data(for: request)
-          }
-        },
+        fetch: options.fetch,
         interceptors: interceptors
       )
     )

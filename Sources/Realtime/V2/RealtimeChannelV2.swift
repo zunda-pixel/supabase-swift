@@ -49,7 +49,7 @@ extension Socket {
     self.init(
       broadcastURL: { [weak client] in client?.broadcastURL ?? URL(string: "http://localhost")! },
       status: { [weak client] in client?.status ?? .disconnected },
-      options: { [weak client] in client?.options ?? .init() },
+      options: { [weak client] in client?.options ?? .init(fetch: { _, _ in (Data(), HTTPResponse(status: .ok)) }) },
       accessToken: { [weak client] in client?.mutableState.accessToken },
       apiKey: { [weak client] in client?.apikey },
       makeRef: { [weak client] in client?.makeRef() ?? 0 },

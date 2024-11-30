@@ -29,6 +29,7 @@ extension RealtimeClientV2 {
     var disconnectOnSessionLoss: Bool
     var connectOnSubscribe: Bool
     var logger: (any SupabaseLogger)?
+    var fetch: @Sendable (HTTPRequest, Data?) async throws -> (Data, HTTPResponse)
 
     public init(
       url: URL,
@@ -39,7 +40,8 @@ extension RealtimeClientV2 {
       timeoutInterval: TimeInterval = 10,
       disconnectOnSessionLoss: Bool = true,
       connectOnSubscribe: Bool = true,
-      logger: (any SupabaseLogger)? = nil
+      logger: (any SupabaseLogger)? = nil,
+      fetch: @escaping @Sendable (HTTPRequest, Data?) async throws -> (Data, HTTPResponse)
     ) {
       self.url = url
       self.apiKey = apiKey
@@ -50,6 +52,7 @@ extension RealtimeClientV2 {
       self.disconnectOnSessionLoss = disconnectOnSessionLoss
       self.connectOnSubscribe = connectOnSubscribe
       self.logger = logger
+      self.fetch = fetch
     }
   }
 
@@ -67,6 +70,7 @@ extension RealtimeClientV2 {
         timeoutInterval: config.timeoutInterval,
         disconnectOnSessionLoss: config.disconnectOnSessionLoss,
         connectOnSubscribe: config.connectOnSubscribe,
+        fetch: config.fetch,
         logger: config.logger
       )
     )

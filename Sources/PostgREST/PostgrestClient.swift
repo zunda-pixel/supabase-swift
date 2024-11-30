@@ -44,13 +44,7 @@ public final class PostgrestClient: Sendable {
       schema: String? = nil,
       headers: HTTPFields = [:],
       logger: (any SupabaseLogger)? = nil,
-      fetch: @escaping FetchHandler = { request, bodyData in
-        if let bodyData {
-          return try await URLSession.shared.upload(for: request, from: bodyData)
-        } else {
-          return try await URLSession.shared.data(for: request)
-        }
-      },
+      fetch: @escaping FetchHandler,
       encoder: JSONEncoder = PostgrestClient.Configuration.jsonEncoder,
       decoder: JSONDecoder = PostgrestClient.Configuration.jsonDecoder
     ) {
@@ -90,13 +84,7 @@ public final class PostgrestClient: Sendable {
     schema: String? = nil,
     headers: HTTPFields = [:],
     logger: (any SupabaseLogger)? = nil,
-    fetch: @escaping FetchHandler = { request, bodyData in
-      if let bodyData {
-        try await URLSession.shared.upload(for: request, from: bodyData)
-      } else {
-        try await URLSession.shared.data(for: request)
-      }
-    },
+    fetch: @escaping FetchHandler,
     encoder: JSONEncoder = PostgrestClient.Configuration.jsonEncoder,
     decoder: JSONDecoder = PostgrestClient.Configuration.jsonDecoder
   ) {

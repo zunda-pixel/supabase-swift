@@ -133,24 +133,6 @@ public final class SupabaseClient: Sendable {
 
   let mutableState = LockIsolated(MutableState())
 
-  private var session: URLSession {
-    options.global.session
-  }
-
-  #if !os(Linux)
-    /// Create a new client.
-    /// - Parameters:
-    ///   - supabaseURL: The unique Supabase URL which is supplied when you create a new project in your project dashboard.
-    ///   - supabaseKey: The unique Supabase Key which is supplied when you create a new project in your project dashboard.
-    public convenience init(supabaseURL: URL, supabaseKey: String) {
-      self.init(
-        supabaseURL: supabaseURL,
-        supabaseKey: supabaseKey,
-        options: SupabaseClientOptions()
-      )
-    }
-  #endif
-
   /// Create a new client.
   /// - Parameters:
   ///   - supabaseURL: The unique Supabase URL which is supplied when you create a new project in your project dashboard.
@@ -191,11 +173,7 @@ public final class SupabaseClient: Sendable {
       decoder: options.auth.decoder,
       fetch: { request, bodyData in
         // DON'T use `fetchWithAuth` method within the AuthClient as it may cause a deadlock.
-        if let bodyData {
-          try await options.global.session.upload(for: request, from: bodyData)
-        } else {
-          try await options.global.session.data(for: request)
-        }
+        try await options.global.fetch(request, bodyData)
       },
       autoRefreshToken: options.auth.autoRefreshToken
     )
@@ -204,7 +182,10 @@ public final class SupabaseClient: Sendable {
       RealtimeClient(
         supabaseURL.appendingPathComponent("/realtime/v1").absoluteString,
         headers: headers,
-        params: headers.dictionary
+        params: headers.dictionary,
+        fetch:  { request, bodyData in
+          try await options.realtime.fetch(request, bodyData)
+        }
       )
     )
 
@@ -357,7 +338,7 @@ public final class SupabaseClient: Sendable {
 
   @Sendable
   private func fetchWithAuth(for request: HTTPRequest) async throws -> (Data, HTTPResponse) {
-    return try await session.data(for: adapt(request: request))
+    return try await options.global.fetch(adapt(request: request), nil)
   }
 
   @Sendable
@@ -365,7 +346,7 @@ public final class SupabaseClient: Sendable {
     for request: HTTPRequest,
     from data: Data
   ) async throws -> (Data, HTTPResponse) {
-    try await session.upload(for: adapt(request: request), from: data)
+    return try await options.global.fetch(adapt(request: request), data)
   }
 
   private func adapt(request: HTTPRequest) async -> HTTPRequest {

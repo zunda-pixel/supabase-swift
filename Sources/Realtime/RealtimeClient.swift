@@ -192,14 +192,16 @@ public class RealtimeClient: PhoenixTransportDelegate {
     _ endPoint: String,
     headers: HTTPFields = [:],
     params: Payload? = nil,
-    vsn: String = Defaults.vsn
+    vsn: String = Defaults.vsn,
+    fetch: @escaping @Sendable (HTTPRequest, Data?) async throws -> (Data, HTTPResponse)
   ) {
     self.init(
       endPoint: endPoint,
       headers: headers,
       transport: { url in URLSessionTransport(url: url) },
       paramsClosure: { params },
-      vsn: vsn
+      vsn: vsn,
+      fetch: fetch
     )
   }
 
@@ -208,14 +210,16 @@ public class RealtimeClient: PhoenixTransportDelegate {
     _ endPoint: String,
     headers: HTTPFields = [:],
     paramsClosure: PayloadClosure?,
-    vsn: String = Defaults.vsn
+    vsn: String = Defaults.vsn,
+    fetch: @escaping @Sendable (HTTPRequest, Data?) async throws -> (Data, HTTPResponse)
   ) {
     self.init(
       endPoint: endPoint,
       headers: headers,
       transport: { url in URLSessionTransport(url: url) },
       paramsClosure: paramsClosure,
-      vsn: vsn
+      vsn: vsn,
+      fetch: fetch
     )
   }
 
@@ -224,7 +228,8 @@ public class RealtimeClient: PhoenixTransportDelegate {
     headers: HTTPFields = [:],
     transport: @escaping ((URL) -> any PhoenixTransport),
     paramsClosure: PayloadClosure? = nil,
-    vsn: String = Defaults.vsn
+    vsn: String = Defaults.vsn,
+    fetch: @escaping @Sendable (HTTPRequest, Data?) async throws -> (Data, HTTPResponse)
   ) {
     self.transport = transport
     self.paramsClosure = paramsClosure
@@ -237,13 +242,7 @@ public class RealtimeClient: PhoenixTransportDelegate {
     }
     self.headers = headers
     http = HTTPClient(
-      fetch: { request, bodyData in
-        if let bodyData {
-          try await URLSession.shared.upload(for: request, from: bodyData)
-        } else {
-          try await URLSession.shared.data(for: request)
-        }
-      },
+      fetch: fetch,
       interceptors: []
     )
 

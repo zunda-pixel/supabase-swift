@@ -43,20 +43,14 @@ public final class FunctionsClient: Sendable {
   ///   - headers: Headers to be included in the requests. (Default: empty dictionary)
   ///   - region: The Region to invoke the functions in.
   ///   - logger: SupabaseLogger instance to use.
-  ///   - fetch: The fetch handler used to make requests. (Default: URLSession.shared.data(for:))
+  ///   - fetch: The fetch handler used to make requests.
   @_disfavoredOverload
   public convenience init(
     url: URL,
     headers: HTTPFields = [:],
     region: String? = nil,
     logger: (any SupabaseLogger)? = nil,
-    fetch: @escaping FetchHandler = { request, bodyData in
-      if let bodyData {
-        try await URLSession.shared.upload(for: request, from: bodyData)
-      } else {
-        try await URLSession.shared.data(for: request)
-      }
-    }
+    fetch: @escaping FetchHandler
   ) {
     var interceptors: [any HTTPClientInterceptor] = []
     if let logger {
@@ -93,19 +87,13 @@ public final class FunctionsClient: Sendable {
   ///   - headers: Headers to be included in the requests. (Default: empty dictionary)
   ///   - region: The Region to invoke the functions in.
   ///   - logger: SupabaseLogger instance to use.
-  ///   - fetch: The fetch handler used to make requests. (Default: URLSession.shared.data(for:))
+  ///   - fetch: The fetch handler used to make requests.
   public convenience init(
     url: URL,
     headers: HTTPFields = [:],
     region: FunctionRegion? = nil,
     logger: (any SupabaseLogger)? = nil,
-    fetch: @escaping FetchHandler = { request, bodyData in
-      if let bodyData {
-        try await URLSession.shared.upload(for: request, from: bodyData)
-      } else {
-        try await URLSession.shared.data(for: request)
-      }
-    }
+    fetch: @escaping FetchHandler
   ) {
     self.init(url: url, headers: headers, region: region?.rawValue, logger: logger, fetch: fetch)
   }

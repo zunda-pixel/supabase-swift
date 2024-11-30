@@ -76,13 +76,7 @@ extension AuthClient.Configuration {
     localStorage: any AuthLocalStorage,
     encoder: JSONEncoder = AuthClient.Configuration.jsonEncoder,
     decoder: JSONDecoder = AuthClient.Configuration.jsonDecoder,
-    fetch: @escaping AuthClient.FetchHandler = { request, bodyData in
-      if let bodyData {
-        try await URLSession.shared.upload(for: request, from: bodyData)
-      } else {
-        try await URLSession.shared.data(for: request)
-      }
-    }
+    fetch: @escaping AuthClient.FetchHandler
   ) {
     self.init(
       url: url,
@@ -120,13 +114,7 @@ extension AuthClient {
     localStorage: any AuthLocalStorage,
     encoder: JSONEncoder = AuthClient.Configuration.jsonEncoder,
     decoder: JSONDecoder = AuthClient.Configuration.jsonDecoder,
-    fetch: @escaping AuthClient.FetchHandler = { data, bodyData in
-      if let bodyData {
-        try await URLSession.shared.upload(for: data, from: bodyData)
-      } else {
-        try await URLSession.shared.data(for: data)
-      }
-    }
+    fetch: @escaping AuthClient.FetchHandler
   ) {
     self.init(
       url: url,
