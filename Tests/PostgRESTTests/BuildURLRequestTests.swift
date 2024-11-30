@@ -254,7 +254,9 @@ final class BuildURLRequestTests: XCTestCase {
   }
 
   func testSessionConfiguration() {
-    let client = PostgrestClient(url: url, schema: nil, logger: nil)
+    let client = PostgrestClient(url: url, schema: nil, logger: nil, fetch: { _, _ in
+      (Data(), HTTPResponse(status: .ok))
+    })
     let clientInfoHeader = client.configuration.headers[.xClientInfo]
     XCTAssertNotNil(clientInfoHeader)
   }

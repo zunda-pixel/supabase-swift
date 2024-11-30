@@ -28,7 +28,14 @@ final class _PushTests: XCTestCase {
     socket = RealtimeClientV2(
       url: URL(string: "https://localhost:54321/v1/realtime")!,
       options: RealtimeClientOptions(
-        headers: [.apiKey: "apikey"]
+        headers: [.apiKey: "apikey"],
+        fetch: { request, bodyData in
+          if let bodyData {
+            try await URLSession.shared.upload(for: request, from: bodyData)
+          } else {
+            try await URLSession.shared.data(for: request)
+          }
+        }
       ),
       ws: ws,
       http: HTTPClientMock()

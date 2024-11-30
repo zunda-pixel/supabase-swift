@@ -21,7 +21,14 @@ final class AuthClientMultipleInstancesTests: XCTestCase {
       configuration: AuthClient.Configuration(
         url: url,
         localStorage: client1Storage,
-        logger: nil
+        logger: nil,
+        fetch: { request, bodyData in
+          if let bodyData {
+            try await URLSession.shared.upload(for: request, from: bodyData)
+          } else {
+            try await URLSession.shared.data(for: request)
+          }
+        }
       )
     )
 
@@ -29,7 +36,14 @@ final class AuthClientMultipleInstancesTests: XCTestCase {
       configuration: AuthClient.Configuration(
         url: url,
         localStorage: client2Storage,
-        logger: nil
+        logger: nil,
+        fetch: { request, bodyData in
+          if let bodyData {
+            try await URLSession.shared.upload(for: request, from: bodyData)
+          } else {
+            try await URLSession.shared.data(for: request)
+          }
+        }
       )
     )
 

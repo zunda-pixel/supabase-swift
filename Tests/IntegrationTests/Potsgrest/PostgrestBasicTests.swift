@@ -9,6 +9,12 @@ import InlineSnapshotTesting
 import PostgREST
 import XCTest
 
+enum DotEnv {
+  static let SUPABASE_URL = "http://localhost:3000"
+  static let SUPABASE_ANON_KEY = "public_anon_key"
+  static let SUPABASE_SERVICE_ROLE_KEY = ""
+}
+
 final class PostgrestBasicTests: XCTestCase {
   let client = PostgrestClient(
     configuration: PostgrestClient.Configuration(
@@ -16,7 +22,14 @@ final class PostgrestBasicTests: XCTestCase {
       headers: [
         .apiKey: DotEnv.SUPABASE_ANON_KEY
       ],
-      logger: nil
+      logger: nil,
+      fetch: { request, bodyData in
+        if let bodyData {
+          try await URLSession.shared.upload(for: request, from: bodyData)
+        } else {
+          try await URLSession.shared.data(for: request)
+        }
+      }
     )
   )
 

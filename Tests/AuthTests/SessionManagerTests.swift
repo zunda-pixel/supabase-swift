@@ -33,6 +33,13 @@ final class SessionManagerTests: XCTestCase {
       configuration: .init(
         url: clientURL,
         localStorage: InMemoryLocalStorage(),
+        fetch: { request, bodyData in
+          if let bodyData {
+            try await URLSession.shared.upload(for: request, from: bodyData)
+          } else {
+            try await URLSession.shared.data(for: request)
+          }
+        },
         autoRefreshToken: false
       ),
       http: http,

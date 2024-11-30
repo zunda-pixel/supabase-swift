@@ -18,15 +18,29 @@ final class RealtimeIntegrationTests: XCTestCase {
   let realtime = RealtimeClientV2(
     url: URL(string: "\(DotEnv.SUPABASE_URL)/realtime/v1")!,
     options: RealtimeClientOptions(
-      headers: [.apiKey: DotEnv.SUPABASE_ANON_KEY]
+      headers: [.apiKey: DotEnv.SUPABASE_ANON_KEY],
+      fetch: { request, bodyData in
+        if let bodyData {
+          try await URLSession.shared.upload(for: request, from: bodyData)
+        } else {
+          try await URLSession.shared.data(for: request)
+        }
+      }
     )
   )
 
   let db = PostgrestClient(
     url: URL(string: "\(DotEnv.SUPABASE_URL)/rest/v1")!,
     headers: [
-      .apiKey: DotEnv.SUPABASE_ANON_KEY
-    ]
+      .apiKey: DotEnv.SUPABASE_ANON_KEY,
+    ],
+    fetch: { request, bodyData in
+      if let bodyData {
+        try await URLSession.shared.upload(for: request, from: bodyData)
+      } else {
+        try await URLSession.shared.data(for: request)
+      }
+    }
   )
 
   override func invokeTest() {

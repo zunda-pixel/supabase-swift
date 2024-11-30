@@ -14,7 +14,14 @@ final class StoredSessionTests: XCTestCase {
         url: URL(string: "http://localhost")!,
         storageKey: "supabase.auth.token",
         localStorage: try! DiskTestStorage(),
-        logger: nil
+        logger: nil,
+        fetch: { request, bodyData in
+          if let bodyData {
+            try await URLSession.shared.upload(for: request, from: bodyData)
+          } else {
+            try await URLSession.shared.data(for: request)
+          }
+        }
       ),
       http: HTTPClientMock(),
       api: .init(clientID: clientID),

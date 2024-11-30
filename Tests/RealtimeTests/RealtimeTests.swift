@@ -37,7 +37,14 @@ final class RealtimeTests: XCTestCase {
         headers: [.apiKey: apiKey],
         heartbeatInterval: 1,
         reconnectDelay: 1,
-        timeoutInterval: 2
+        timeoutInterval: 2,
+        fetch: { request, bodyData in
+          if let bodyData {
+            try await URLSession.shared.upload(for: request, from: bodyData)
+          } else {
+            try await URLSession.shared.data(for: request)
+          }
+        }
       ),
       ws: ws,
       http: http

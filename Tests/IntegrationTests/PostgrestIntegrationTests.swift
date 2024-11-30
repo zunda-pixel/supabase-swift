@@ -40,7 +40,14 @@ final class IntegrationTests: XCTestCase {
     headers: [
       .apiKey: DotEnv.SUPABASE_ANON_KEY
     ],
-    logger: nil
+    logger: nil,
+    fetch: { request, bodyData in
+      if let bodyData {
+        try await URLSession.shared.upload(for: request, from: bodyData)
+      } else {
+        try await URLSession.shared.data(for: request)
+      }
+    }
   )
 
   override func setUp() async throws {

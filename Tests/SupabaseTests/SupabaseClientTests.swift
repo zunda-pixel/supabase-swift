@@ -42,14 +42,27 @@ final class SupabaseClientTests: XCTestCase {
         ),
         global: SupabaseClientOptions.GlobalOptions(
           headers: customHeaders,
-          session: .shared,
-          logger: logger
+          logger: logger,
+          fetch: { request, bodyData in
+            if let bodyData {
+              try await URLSession.shared.upload(for: request, from: bodyData)
+            } else {
+              try await URLSession.shared.data(for: request)
+            }
+          }
         ),
         functions: SupabaseClientOptions.FunctionsOptions(
           region: .apNortheast1
         ),
         realtime: RealtimeClientOptions(
-          headers: [.init("custom_realtime_header_key")!: "custom_realtime_header_value"]
+          headers: [.init("custom_realtime_header_key")!: "custom_realtime_header_value"],
+          fetch: { request, bodyData in
+            if let bodyData {
+              try await URLSession.shared.upload(for: request, from: bodyData)
+            } else {
+              try await URLSession.shared.data(for: request)
+            }
+          }
         )
       )
     )
@@ -99,7 +112,23 @@ final class SupabaseClientTests: XCTestCase {
     func testClientInitWithDefaultOptionsShouldBeAvailableInNonLinux() {
       _ = SupabaseClient(
         supabaseURL: URL(string: "https://project-ref.supabase.co")!,
-        supabaseKey: "ANON_KEY"
+        supabaseKey: "ANON_KEY",
+        options: .init(
+          global: .init(fetch: { request, bodyData in
+            if let bodyData {
+              try await URLSession.shared.upload(for: request, from: bodyData)
+            } else {
+              try await URLSession.shared.data(for: request)
+            }
+          }),
+          realtime: .init(fetch: { request, bodyData in
+            if let bodyData {
+              try await URLSession.shared.upload(for: request, from: bodyData)
+            } else {
+              try await URLSession.shared.data(for: request)
+            }
+          })
+        )
       )
     }
   #endif
@@ -114,7 +143,21 @@ final class SupabaseClientTests: XCTestCase {
         auth: .init(
           storage: localStorage,
           accessToken: { "jwt" }
-        )
+        ),
+        global: .init(fetch: { request, bodyData in
+          if let bodyData {
+            try await URLSession.shared.upload(for: request, from: bodyData)
+          } else {
+            try await URLSession.shared.data(for: request)
+          }
+        }),
+        realtime: .init(fetch: { request, bodyData in
+          if let bodyData {
+            try await URLSession.shared.upload(for: request, from: bodyData)
+          } else {
+            try await URLSession.shared.data(for: request)
+          }
+        })
       )
     )
 

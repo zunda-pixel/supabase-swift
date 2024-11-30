@@ -14,13 +14,30 @@ final class FunctionsClientTests: XCTestCase {
   let url = URL(string: "http://localhost:5432/functions/v1")!
   let apiKey = "supabase.anon.key"
 
-  lazy var sut = FunctionsClient(url: url, headers: [.apiKey: apiKey])
+  lazy var sut = FunctionsClient(
+    url: url,
+    headers: [.apiKey: apiKey],
+    fetch: { request, bodyData in
+      if let bodyData {
+        try await URLSession.shared.upload(for: request, from: bodyData)
+      } else {
+        try await URLSession.shared.data(for: request)
+      }
+    }
+  )
 
   func testInit() async {
     let client = FunctionsClient(
       url: url,
       headers: [.apiKey: apiKey],
-      region: .saEast1
+      region: .saEast1,
+      fetch: { request, bodyData in
+        if let bodyData {
+          try await URLSession.shared.upload(for: request, from: bodyData)
+        } else {
+          try await URLSession.shared.data(for: request)
+        }
+      }
     )
     XCTAssertEqual(client.region, "sa-east-1")
 

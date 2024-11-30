@@ -20,7 +20,14 @@ extension Dependencies {
     configuration: AuthClient.Configuration(
       url: URL(string: "https://project-id.supabase.com")!,
       localStorage: InMemoryLocalStorage(),
-      logger: nil
+      logger: nil,
+      fetch: { request, bodyData in
+        if let bodyData {
+          try await URLSession.shared.upload(for: request, from: bodyData)
+        } else {
+          try await URLSession.shared.data(for: request)
+        }
+      }
     ),
     http: HTTPClientMock(),
     api: APIClient(clientID: AuthClientID()),
