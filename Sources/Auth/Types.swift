@@ -619,7 +619,7 @@ public struct AuthMFAEnrollResponse: Decodable, Hashable, Sendable {
   }
 }
 
-public struct MFAChallengeParams: Encodable, Hashable {
+public struct MFAChallengeParams: Encodable, Hashable, Sendable {
   /// ID of the factor to be challenged. Returned in ``AuthMFA/enroll(params:)``.
   public let factorId: String
 
@@ -632,7 +632,7 @@ public struct MFAChallengeParams: Encodable, Hashable {
   }
 }
 
-public struct MFAVerifyParams: Encodable, Hashable {
+public struct MFAVerifyParams: Encodable, Hashable, Sendable {
   /// ID of the factor being verified. Returned in ``AuthMFA/enroll(params:)``.
   public let factorId: String
 

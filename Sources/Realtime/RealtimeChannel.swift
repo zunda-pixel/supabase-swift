@@ -35,7 +35,7 @@ struct Binding {
   let id: String?
 }
 
-public struct ChannelFilter {
+public struct ChannelFilter: Sendable {
   public var event: String?
   public var schema: String?
   public let table: String?
@@ -60,18 +60,18 @@ public struct ChannelFilter {
   }
 }
 
-public enum ChannelResponse {
+public enum ChannelResponse: Sendable {
   case ok, timedOut, error
 }
 
-public enum RealtimeListenTypes: String {
+public enum RealtimeListenTypes: String, Sendable {
   case postgresChanges = "postgres_changes"
   case broadcast
   case presence
 }
 
 /// Represents the broadcast and presence options for a channel.
-public struct RealtimeChannelOptions {
+public struct RealtimeChannelOptions: Sendable {
   /// Used to track presence payload across clients. Must be unique per client. If `nil`, the server
   /// will generate one.
   var presenceKey: String?
@@ -106,7 +106,7 @@ public struct RealtimeChannelOptions {
   }
 }
 
-public enum RealtimeSubscribeStates {
+public enum RealtimeSubscribeStates: Sendable {
   case subscribed
   case timedOut
   case closed

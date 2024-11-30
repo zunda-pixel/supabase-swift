@@ -1007,7 +1007,7 @@ public class RealtimeClient: PhoenixTransportDelegate {
 
 // ----------------------------------------------------------------------
 extension RealtimeClient {
-  public enum CloseCode: Int {
+  public enum CloseCode: Int, Sendable {
     case abnormal = 999
 
     case normal = 1000
