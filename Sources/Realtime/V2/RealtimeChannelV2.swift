@@ -185,21 +185,21 @@ public final class RealtimeChannelV2: Sendable {
       let task = Task { [headers] in
         _ = try? await socket.http.send(
           HTTPRequest(
-            url: socket.broadcastURL,
             method: .post,
-            headers: headers,
-            body: JSONEncoder().encode(
-              [
-                "messages": [
-                  Message(
-                    topic: topic,
-                    event: event,
-                    payload: message,
-                    private: config.isPrivate
-                  )
-                ]
+            url: socket.broadcastURL,
+            headerFields: headers
+          ),
+          JSONEncoder().encode(
+            [
+              "messages": [
+                Message(
+                  topic: topic,
+                  event: event,
+                  payload: message,
+                  private: config.isPrivate
+                )
               ]
-            )
+            ]
           )
         )
       }
