@@ -12,9 +12,9 @@ import Helpers
 let version = Helpers.version
 
 extension PostgrestClient.Configuration {
-  private static let supportedDateFormatters: [UncheckedSendable<ISO8601DateFormatter>] = [
-    ISO8601DateFormatter.iso8601WithFractionalSeconds,
-    ISO8601DateFormatter.iso8601,
+  private static let supportedDateFormatStyles: [Date.ISO8601FormatStyle] = [
+    Date.ISO8601FormatStyle(includingFractionalSeconds: true),
+    Date.ISO8601FormatStyle(includingFractionalSeconds: false),
   ]
 
   /// The default `JSONDecoder` instance for ``PostgrestClient`` responses.
@@ -24,8 +24,8 @@ extension PostgrestClient.Configuration {
       let container = try decoder.singleValueContainer()
       let string = try container.decode(String.self)
 
-      for formatter in supportedDateFormatters {
-        if let date = formatter.value.date(from: string) {
+      for formatStyle in supportedDateFormatStyles {
+        if let date = try? Date(string, strategy: formatStyle) {
           return date
         }
       }

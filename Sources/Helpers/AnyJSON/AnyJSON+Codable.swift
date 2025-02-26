@@ -17,8 +17,8 @@ extension AnyJSON {
       let dateString = try container.decode(String.self)
 
       let date =
-        ISO8601DateFormatter.iso8601WithFractionalSeconds.value.date(from: dateString)
-        ?? ISO8601DateFormatter.iso8601.value.date(from: dateString)
+      try? Date(dateString, strategy: Date.ISO8601FormatStyle(includingFractionalSeconds: true))
+      ?? Date(dateString, strategy: Date.ISO8601FormatStyle(includingFractionalSeconds: false))
 
       guard let decodedDate = date else {
         throw DecodingError.dataCorruptedError(
@@ -36,7 +36,7 @@ extension AnyJSON {
     let encoder = JSONEncoder()
     encoder.dataEncodingStrategy = .base64
     encoder.dateEncodingStrategy = .custom { date, encoder in
-      let string = ISO8601DateFormatter.iso8601WithFractionalSeconds.value.string(from: date)
+      let string = date.formatted(Date.ISO8601FormatStyle(includingFractionalSeconds: true))
       var container = encoder.singleValueContainer()
       try container.encode(string)
     }
